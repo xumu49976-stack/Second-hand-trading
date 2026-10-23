@@ -1,0 +1,5 @@
+out/
+*.class
+target/
+
+# IDEA：跟踪模块与项目设置（.idea/.gitignore 里已排除 workspace.xml 等用户状态）
