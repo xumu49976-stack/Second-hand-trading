@@ -1,5 +1,7 @@
 package com.campus.trade;
 
+import java.util.ArrayList;
+
 /**
  * 商品管理器（对应路线 V0.1 · 任务 2）
  *
@@ -22,5 +24,29 @@ package com.campus.trade;
  * 我不替你选，因为这两条路要练的东西不一样。
  */
 public class ProductManager {
+    private ArrayList<Product> products = new ArrayList<>();
 
+    public void addProduct(Product p){
+        products.add(p);
+    }
+    public void showAll(){
+        for (Product p : products) { p.showProduct(); }
+    }
+    public Product findByName(String name){
+        for (Product p : products){
+            if(name.equals(p.getName())){
+                return p;
+            }
+        }
+        return null;
+    }
+    public boolean removeByName(String name){
+        for(Product p : products){
+            if(name.equals(p.getName())){
+                products.remove(p);
+                return true;
+            }
+        }
+        return false;
+    }
 }

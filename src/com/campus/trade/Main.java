@@ -21,24 +21,58 @@ package com.campus.trade;
 public class Main {
     public static void main(String[] args) {
         Product product = new Product("哇哈哈", 19.9, 100);
+
+//        if(product.containsKeyword("哇哈")){        //检查是否有关键字
+//            System.out.println("有此关键字");
+//        }else{
+//            System.out.println("无此关键字");
+//        }
+
+        Product product1 = new Product("康师傅", -100, 100);
+
+        Product product2 = new Product("蜜雪冰城", 10, -50);
+        System.out.println("----------------全部展示----------------");
+        ProductManager productManager = new ProductManager();
+        productManager.addProduct(product);
+        productManager.addProduct(product1);
+        productManager.addProduct(product2);
+        productManager.showAll();
+
+        System.out.println("---------------演示改库存：+10 一次、减爆一次-----------------");
         product.showProduct();
         product.stockChange("+", 10);
         product.showProduct();
         product.stockChange("-", 200);
-
-        Product product1 = new Product("康师傅", -100, 100);
-        product1.showProduct();
-
-        Product product2 = new Product("蜜雪冰城", 10, -50);
-        if(!(product2.setPrice(-5))){
+        System.out.println("--------------演示非法输入：价格为负、库存为负-----------------");
+        if(!(product2.setPrice(-1))){              //价格设置检验
             System.out.println("价格设置失败，价格不能为负");
         }else {
             System.out.println("价格设置成功");
         }
-        if(!(product2.setStock(-19))){
+        if(!(product2.setStock(-19))){          //库存设置检验
             System.out.println("库存设置失败，库存不能为负");
         }else{
             System.out.println("库存设置成功");
         }
+
+        System.out.println("---------------按名称查一个存在的、一个不存在的----------------");
+        Product product3 = productManager.findByName("康师傅");
+        if(product3 == null){
+            System.out.println("没找到");
+        }else {
+            product3.showProduct();
+        }
+        Product product4 = productManager.findByName("pppp");
+        if(product4 == null){
+            System.out.println("没找到");
+        }else {
+            product4.showProduct();
+        }
+
+        System.out.println("-----------------按名称删一个，再全部展示--------------------");
+        System.out.println(productManager.removeByName("pppp"));
+        productManager.removeByName("康师傅");
+        productManager.showAll();
+
     }
 }

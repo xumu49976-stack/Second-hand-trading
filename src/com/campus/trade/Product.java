@@ -25,62 +25,60 @@ public class Product {
     private String name;
     private double price;
     private int stock;
-
     public String getName() {
         return name;
     }
-    public void setName(String name) {
-        this.name = name;
+    public boolean setName(String name) {
+        if(name == null || name.isEmpty()){
+            return false;
+        }else {
+            this.name = name;
+            return true;
+        }
     }
-
     public double getPrice() {
         return price;
     }
     public boolean setPrice(double price) {
         if(price < 0){
-            System.out.println("商品创建失败，价格不可为负");
-            return false;
+            return false;    //价格设置失败
         }else{
             this.price = price;
-            return true;
+            return true;    //价格设置成功
         }
     }
-
     public int getStock() {
         return stock;
     }
     public boolean setStock(int stock) {
         if(stock < 0){
-            System.out.println("商品创建失败，库存不可为负");
-            return false;
+            return false;    //库存设置失败
         }else{
             this.stock = stock;
-            return true;
+            return true;    //库存设置成功
         }
     }
-
     public Product(String name, double price, int stock) {
         this.name = name;
-        this.setPrice(price);
+        this.setPrice(price);     // TODO: 构造方法失败如何告知调用方，待学异常后处理
         this.setStock(stock);
     }
-
     public void showProduct(){
-        System.out.println("商品具体信息：");
-        System.out.println("名称："+this.name);
-        System.out.println("价格："+this.price);
-        System.out.println("库存："+this.stock);
+        StringBuilder productInformation = new StringBuilder();
+        productInformation.append("商品具体信息：\n");
+        productInformation.append("名称："+this.name+ "\n");
+        productInformation.append("价格："+this.price+ "\n");
+        productInformation.append("库存："+this.stock);
+        System.out.println(productInformation);
     }
-
     public void stockChange(String symbol, int quantity){
         if(quantity <= 0){
             System.out.println("要改变的数量异常");
             return;
         }
-
-        if(symbol == "+"){
+        if("+".equals(symbol)){
             this.stock += quantity;
-        }else if(symbol == "-"){
+        }else if("-".equals(symbol)){
             if(quantity > this.stock){
                 System.out.println("库存量不足以拿出"+quantity+"个");
             }else {
@@ -89,5 +87,8 @@ public class Product {
         }else{
             System.out.println("库存修改失败！");
         }
+    }
+    public boolean containsKeyword(String keyword){
+        return this.name.contains(keyword);
     }
 }
