@@ -1,5 +1,7 @@
 package com.campus.trade;
 
+import java.util.Objects;
+
 /**
  * 商品（对应路线 V0.1 · 任务 1）
  *
@@ -90,5 +92,17 @@ public class Product {
     }
     public boolean containsKeyword(String keyword){
         return this.name.contains(keyword);
+    }
+    @Override
+    public boolean equals(Object o){
+        if(this == o){ return true; }
+        if(o == null || getClass() != o.getClass()){ return false; }
+        Product p = (Product) o;
+        return p.getName().equals(name) && Double.compare(p.getPrice(), price) == 0 && p.getStock() == stock;
+    }
+    @Override
+    public int hashCode() {
+        // 使用 Objects.hash 可以自动处理 null 值，非常方便
+        return Objects.hash(name, price, stock);
     }
 }

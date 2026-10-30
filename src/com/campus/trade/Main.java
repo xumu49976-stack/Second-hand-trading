@@ -22,13 +22,7 @@ public class Main {
     public static void main(String[] args) {
         Product product = new Product("哇哈哈", 19.9, 100);
 
-//        if(product.containsKeyword("哇哈")){        //检查是否有关键字
-//            System.out.println("有此关键字");
-//        }else{
-//            System.out.println("无此关键字");
-//        }
-
-        Product product1 = new Product("康师傅", -100, 100);
+        Product product1 = new Product("康师傅", 0.0, 100);
 
         Product product2 = new Product("蜜雪冰城", 10, -50);
         System.out.println("----------------全部展示----------------");
@@ -74,5 +68,12 @@ public class Main {
         productManager.removeByName("康师傅");
         productManager.showAll();
 
+        //测试product里重写的equals方法，double为0.0也不会出现NaN和NaN比较了
+        Product product5 = new Product("康师傅", 0.0, 100);
+        if(product1.equals(product5)){
+            System.out.println("相等");
+        }else {
+            System.out.println("不相等");
+        }
     }
 }

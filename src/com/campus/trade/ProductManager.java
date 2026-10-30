@@ -30,7 +30,10 @@ public class ProductManager {
         products.add(p);
     }
     public void showAll(){
-        for (Product p : products) { p.showProduct(); }
+        for (Product p : products) {
+            if(p == null){ continue; }
+            p.showProduct();
+        }
     }
     public Product findByName(String name){
         for (Product p : products){
