@@ -49,6 +49,13 @@ public class Product {
             return true;    //价格设置成功
         }
     }
+    public boolean setPriceOrThrow(double price){
+        if(price < 0){
+            throw new IllegalArgumentException("价格不能为负：" + price);
+        }
+        this.price = price;
+        return true;
+    }
     public int getStock() {
         return stock;
     }
@@ -61,8 +68,10 @@ public class Product {
         }
     }
     public Product(String name, double price, int stock) {
-        this.name = name;
-        this.setPrice(price);     // TODO: 构造方法失败如何告知调用方，待学异常后处理
+        if(!this.setName(name)){
+            throw new IllegalArgumentException("商品名不能为空");
+        }
+        this.setPriceOrThrow(price);
         this.setStock(stock);
     }
     public void showProduct(){
@@ -98,11 +107,12 @@ public class Product {
         if(this == o){ return true; }
         if(o == null || getClass() != o.getClass()){ return false; }
         Product p = (Product) o;
-        return p.getName().equals(name) && Double.compare(p.getPrice(), price) == 0 && p.getStock() == stock;
+        return Objects.equals(p.getName(), name) && Double.compare(p.getPrice(), price) == 0 && p.getStock() == stock;
     }
     @Override
     public int hashCode() {
         // 使用 Objects.hash 可以自动处理 null 值，非常方便
         return Objects.hash(name, price, stock);
+
     }
 }

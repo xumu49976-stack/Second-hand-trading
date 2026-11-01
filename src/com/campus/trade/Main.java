@@ -25,6 +25,12 @@ public class Main {
         Product product1 = new Product("康师傅", 0.0, 100);
 
         Product product2 = new Product("蜜雪冰城", 10, -50);
+
+        try{
+            Product product6 = new Product("坏商品", -5, 1);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
+        }
         System.out.println("----------------全部展示----------------");
         ProductManager productManager = new ProductManager();
         productManager.addProduct(product);
@@ -38,10 +44,11 @@ public class Main {
         product.showProduct();
         product.stockChange("-", 200);
         System.out.println("--------------演示非法输入：价格为负、库存为负-----------------");
-        if(!(product2.setPrice(-1))){              //价格设置检验
-            System.out.println("价格设置失败，价格不能为负");
-        }else {
-            System.out.println("价格设置成功");
+        //价格设置检验
+        try {
+            product2.setPriceOrThrow(-1);
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
         }
         if(!(product2.setStock(-19))){          //库存设置检验
             System.out.println("库存设置失败，库存不能为负");
@@ -69,8 +76,13 @@ public class Main {
         productManager.showAll();
 
         //测试product里重写的equals方法，double为0.0也不会出现NaN和NaN比较了
-        Product product5 = new Product("康师傅", 0.0, 100);
-        if(product1.equals(product5)){
+        Product bad = new Product(null, 10, 1);
+        if(product1.equals(bad)){
+            System.out.println("相等");
+        }else {
+            System.out.println("不相等");
+        }
+        if(bad.equals(product1)){
             System.out.println("相等");
         }else {
             System.out.println("不相等");
