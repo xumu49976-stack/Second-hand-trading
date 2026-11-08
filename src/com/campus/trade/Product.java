@@ -27,6 +27,7 @@ public class Product {
     private String name;
     private double price;
     private int stock;
+
     public String getName() {
         return name;
     }
@@ -38,6 +39,7 @@ public class Product {
             return true;
         }
     }
+
     public double getPrice() {
         return price;
     }
@@ -51,11 +53,12 @@ public class Product {
     }
     public boolean setPriceOrThrow(double price){
         if(price < 0){
-            throw new IllegalArgumentException("价格不能为负：" + price);
+            throw new InvalidPriceException("价格不能为负：" + price);
         }
         this.price = price;
         return true;
     }
+
     public int getStock() {
         return stock;
     }
@@ -67,6 +70,8 @@ public class Product {
             return true;    //库存设置成功
         }
     }
+
+    //带参构造
     public Product(String name, double price, int stock) {
         if(!this.setName(name)){
             throw new IllegalArgumentException("商品名不能为空");
@@ -74,6 +79,7 @@ public class Product {
         this.setPriceOrThrow(price);
         this.setStock(stock);
     }
+
     public void showProduct(){
         StringBuilder productInformation = new StringBuilder();
         productInformation.append("商品具体信息：\n");
@@ -82,6 +88,7 @@ public class Product {
         productInformation.append("库存："+this.stock);
         System.out.println(productInformation);
     }
+
     public void stockChange(String symbol, int quantity){
         if(quantity <= 0){
             System.out.println("要改变的数量异常");
@@ -99,9 +106,11 @@ public class Product {
             System.out.println("库存修改失败！");
         }
     }
+
     public boolean containsKeyword(String keyword){
         return this.name.contains(keyword);
     }
+
     @Override
     public boolean equals(Object o){
         if(this == o){ return true; }
@@ -109,6 +118,7 @@ public class Product {
         Product p = (Product) o;
         return Objects.equals(p.getName(), name) && Double.compare(p.getPrice(), price) == 0 && p.getStock() == stock;
     }
+
     @Override
     public int hashCode() {
         // 使用 Objects.hash 可以自动处理 null 值，非常方便
