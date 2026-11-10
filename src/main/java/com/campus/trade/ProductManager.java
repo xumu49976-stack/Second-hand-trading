@@ -64,6 +64,10 @@ public class ProductManager {
     public void saveToFile(String path) throws IOException {
         File file = new File(path);
 
+        //加父目录兜底
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) { parent.mkdirs(); }
+
         //按行写入商品数据
         FileWriter fileWriter = new FileWriter(file, false);
         //文件路径不存在时：FileWriter 会自动建文件
