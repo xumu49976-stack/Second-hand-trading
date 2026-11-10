@@ -1,8 +1,11 @@
 package com.campus.trade;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,10 @@ public class Main {
         ProductManager productManager = new ProductManager();
 
         String path = "out/products.txt";
+
+        String content = FileUtils.readFileToString(new File(path), StandardCharsets.UTF_8);
+        System.out.println(content);
+
         if(new File(path).exists()){
             productManager.loadFromFile(path);
         }else{
