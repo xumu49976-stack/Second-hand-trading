@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,29 +30,55 @@ import java.util.List;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        ProductManager productManager = new ProductManager();
 
-        String path = "out/products.txt";
+        ProductDao productDao = new ProductDao();
+        List<Product> productList = new ArrayList<>();
 
-        String content = FileUtils.readFileToString(new File(path), StandardCharsets.UTF_8);
-        System.out.println(content);
-
-        if(new File(path).exists()){
-            productManager.loadFromFile(path);
-        }else{
-            System.out.println("还没有存档，从空列表开始");
+        //查库展示
+        try {
+            productList = productDao.findAll();
+            System.out.println(productList);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-
-        productManager.addIndexName();
-        List<Product> searchProducts = productManager.searchByName("哇哈哈");
-        for (Product searchProduct : searchProducts) {
-            System.out.println(searchProduct.getName());
+        //查询
+        try {
+            Product product = productDao.findById(1);
+            System.out.println(product);
+        }catch (SQLException e){
+            e.printStackTrace();
         }
 
-        System.out.println("-------------------------------------");
+        //增加
+        try {
+            Product product = new Product("鸡腿", 5, 66);
+            productDao.insert(product);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
 
-        productManager.saveToFile(path);
-        productManager.showAll();
+        //修改
+        try {
+            productDao.updateStock(4, 666);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        //删除
+        try {
+            productDao.deleteById(4);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        //查库展示
+        try {
+            productList = productDao.findAll();
+            System.out.println(productList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

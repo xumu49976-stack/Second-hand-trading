@@ -1,0 +1,139 @@
+package com.campus.trade;
+
+import java.io.InputStream;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+public class ProductDao {
+    // 声明为 static，全类共享
+    private static String url;
+    private static String mysqlName;
+    private static String password;
+
+    // 静态代码块，在类加载时执行一次
+    static {
+        Properties props = new Properties();
+        // 使用类加载器去 resources 目录下读取文件
+        try (InputStream is = ProductDao.class.getClassLoader().getResourceAsStream("jdbc.properties")) {
+            if (is == null) {
+                System.out.println("严重错误：找不到 jdbc.properties 文件！");
+            }
+            props.load(is);
+
+            // 赋值给静态变量
+            url = props.getProperty("jdbc.url");
+            mysqlName = props.getProperty("jdbc.username");
+            password = props.getProperty("jdbc.password");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //将数据库里所有商品封装到List里返回
+    List<Product> findAll() throws SQLException {
+        String sql = "select * from product";
+        List<Product> productList = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();){
+            while (resultSet.next()){
+                String name = resultSet.getString(2);
+                double price = resultSet.getDouble(3);
+                int stock = resultSet.getInt(4);
+                Product product = new Product(name, price, stock);
+                productList.add(product);
+            }
+        }catch (SQLException e){
+            throw e;
+        }
+        return productList;
+    }
+
+    //根据id返回数据库里对应商品对象
+    Product findById(long id) throws SQLException {
+        String sql = "select * from product where id =?";
+        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setLong(1, id);
+            try(ResultSet resultSet = preparedStatement.executeQuery();){
+                if(resultSet.next()){
+                    String name = resultSet.getString(2);
+                    double price = resultSet.getDouble(3);
+                    int stock = resultSet.getInt(4);
+                    Product product = new Product(name, price, stock);
+                    return product;
+                }
+            }
+        }catch (SQLException e){
+            throw e;
+        }
+        return null;
+    }
+
+    //将传入的product插入到数据库里
+    void insert(Product product) throws SQLException {
+        String productNamename = product.getName();
+        double productPrice = product.getPrice();
+        int productStock = product.getStock();
+        String sql = "insert into product (name, price, stock) values (?, ?, ?)";
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ){
+            preparedStatement.setString(1, productNamename);
+            preparedStatement.setDouble(2, productPrice);
+            preparedStatement.setInt(3, productStock);
+            int num = preparedStatement.executeUpdate();
+            if(num > 0){
+                System.out.println("插入商品成功！");
+            }else {
+                System.out.println("插入商品失败！");
+            }
+        } catch (SQLException e){
+            throw e;
+        }
+    }
+
+    //根据传入商品ID更新数据库商品库存
+    void updateStock(long id, int stock) throws SQLException {
+        String sql = "update product set stock = ? where id = ?";
+        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ){
+            preparedStatement.setLong(2, id);
+            preparedStatement.setInt(1, stock);
+            int num = preparedStatement.executeUpdate();
+            if(num > 0){
+                System.out.println("更新商品库存成功！");
+            }else {
+                System.out.println("更新商品库存失败！");
+            }
+        }catch (SQLException e){
+            throw e;
+        }
+    }
+
+    //根据传入商品ID删除数据库商品
+    void deleteById(long id) throws SQLException {
+        String sql = "delete from product where id = ?";
+        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ){
+            preparedStatement.setLong(1, id);
+            int num = preparedStatement.executeUpdate();
+            if(num > 0){
+                System.out.println("删除商品成功！");
+            }else {
+                System.out.println("删除商品失败！");
+            }
+        }catch (SQLException e){
+            throw e;
+        }
+    }
+
+}
+
+
