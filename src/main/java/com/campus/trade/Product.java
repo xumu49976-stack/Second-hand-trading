@@ -1,5 +1,6 @@
 package com.campus.trade;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -25,7 +26,7 @@ import java.util.Objects;
  */
 public class Product {
     private String name;
-    private double price;
+    private BigDecimal price;
     private int stock;
 
     public String getName() {
@@ -40,19 +41,19 @@ public class Product {
         }
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
-    public boolean setPrice(double price) {
-        if(price < 0){
+    public boolean setPrice(BigDecimal price) {
+        if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
             return false;    //价格设置失败
         }else{
             this.price = price;
             return true;    //价格设置成功
         }
     }
-    public boolean setPriceOrThrow(double price){
-        if(price < 0){
+    public boolean setPriceOrThrow(BigDecimal price){
+        if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
             throw new InvalidPriceException("价格不能为负：" + price);
         }
         this.price = price;
@@ -72,7 +73,7 @@ public class Product {
     }
 
     //带参构造
-    public Product(String name, double price, int stock) {
+    public Product(String name, BigDecimal price, int stock) {
         if(!this.setName(name)){
             throw new IllegalArgumentException("商品名不能为空");
         }
@@ -116,7 +117,11 @@ public class Product {
         if(this == o){ return true; }
         if(o == null || getClass() != o.getClass()){ return false; }
         Product p = (Product) o;
-        return Objects.equals(p.getName(), name) && Double.compare(p.getPrice(), price) == 0 && p.getStock() == stock;
+        // 修改后 (推荐使用 compareTo)
+        return Objects.equals(p.getName(), name)
+                && p.getPrice() != null
+                && p.getPrice().compareTo(price) == 0
+                && p.getStock() == stock;
     }
 
     @Override

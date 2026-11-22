@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class Main {
 
         //增加
         try {
-            Product product = new Product("鸡腿", 5, 66);
+            Product product = new Product("鸡腿", new BigDecimal("5.00"), 66);
             if( productManager.addProduct(product) ){
                 System.out.println("商品增加成功！");
             } else {
