@@ -1,6 +1,7 @@
 package com.campus.trade;
 
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,9 @@ public class ProductDao {
         {
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()){
-                    String name = resultSet.getString(2);
-                    double price = resultSet.getDouble(3);
-                    int stock = resultSet.getInt(4);
+                    String name = resultSet.getString("name");
+                    BigDecimal price = resultSet.getBigDecimal("price");
+                    int stock = resultSet.getInt("stock");
                     Product product = new Product(name, price, stock);
                     productList.add(product);
                 }
@@ -64,9 +65,9 @@ public class ProductDao {
             try(ResultSet resultSet = preparedStatement.executeQuery();)
             {
                 if(resultSet.next()){
-                    String name = resultSet.getString(2);
-                    double price = resultSet.getDouble(3);
-                    int stock = resultSet.getInt(4);
+                    String name = resultSet.getString("name");
+                    BigDecimal price = resultSet.getBigDecimal("price");
+                    int stock = resultSet.getInt("stock");
                     Product product = new Product(name, price, stock);
                     return product;
                 }
@@ -87,7 +88,7 @@ public class ProductDao {
             try(ResultSet resultSet = preparedStatement.executeQuery();)
             {
                 while (resultSet.next()){
-                    Product product = new Product(resultSet.getString("name"), resultSet.getDouble("price"), resultSet.getInt("stock"));
+                    Product product = new Product(resultSet.getString("name"), resultSet.getBigDecimal("price"), resultSet.getInt("stock"));
                     productList.add(product);
                 }
             }
@@ -99,7 +100,7 @@ public class ProductDao {
     //将传入的product插入到数据库里
     boolean insert(Product product) throws SQLException {
         String productNamename = product.getName();
-        double productPrice = product.getPrice();
+        BigDecimal productPrice = product.getPrice();
         int productStock = product.getStock();
         int count = 0;
         String sql = "insert into product (name, price, stock) values (?, ?, ?)";
@@ -107,7 +108,7 @@ public class ProductDao {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);)
         {
             preparedStatement.setString(1, productNamename);
-            preparedStatement.setDouble(2, productPrice);
+            preparedStatement.setBigDecimal(2, productPrice);
             preparedStatement.setInt(3, productStock);
             count = preparedStatement.executeUpdate();
         }
