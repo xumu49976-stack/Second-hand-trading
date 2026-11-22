@@ -37,29 +37,32 @@ public class ProductDao {
         String sql = "select * from product";
         List<Product> productList = new ArrayList<>();
 
-        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ResultSet resultSet = preparedStatement.executeQuery();){
-            while (resultSet.next()){
-                String name = resultSet.getString(2);
-                double price = resultSet.getDouble(3);
-                int stock = resultSet.getInt(4);
-                Product product = new Product(name, price, stock);
-                productList.add(product);
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                while (resultSet.next()){
+                    String name = resultSet.getString(2);
+                    double price = resultSet.getDouble(3);
+                    int stock = resultSet.getInt(4);
+                    Product product = new Product(name, price, stock);
+                    productList.add(product);
+                }
             }
-        }catch (SQLException e){
-            throw e;
         }
+
         return productList;
     }
 
     //根据id返回数据库里对应商品对象
     Product findById(long id) throws SQLException {
         String sql = "select * from product where id =?";
-        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
             preparedStatement.setLong(1, id);
-            try(ResultSet resultSet = preparedStatement.executeQuery();){
+            try(ResultSet resultSet = preparedStatement.executeQuery();)
+            {
                 if(resultSet.next()){
                     String name = resultSet.getString(2);
                     double price = resultSet.getDouble(3);
@@ -68,70 +71,96 @@ public class ProductDao {
                     return product;
                 }
             }
-        }catch (SQLException e){
-            throw e;
         }
+
         return null;
     }
 
+    //根据商品名返回同名商品列表
+    List<Product> findByName(String name) throws SQLException {
+        List<Product> productList = new ArrayList<>();
+        String sql = "select name, price, stock from product where name = ?";
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
+            preparedStatement.setString(1, name);
+            try(ResultSet resultSet = preparedStatement.executeQuery();)
+            {
+                while (resultSet.next()){
+                    Product product = new Product(resultSet.getString("name"), resultSet.getDouble("price"), resultSet.getInt("stock"));
+                    productList.add(product);
+                }
+            }
+        }
+
+        return productList;
+    }
+
     //将传入的product插入到数据库里
-    void insert(Product product) throws SQLException {
+    boolean insert(Product product) throws SQLException {
         String productNamename = product.getName();
         double productPrice = product.getPrice();
         int productStock = product.getStock();
+        int count = 0;
         String sql = "insert into product (name, price, stock) values (?, ?, ?)";
         try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ){
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
             preparedStatement.setString(1, productNamename);
             preparedStatement.setDouble(2, productPrice);
             preparedStatement.setInt(3, productStock);
-            int num = preparedStatement.executeUpdate();
-            if(num > 0){
-                System.out.println("插入商品成功！");
-            }else {
-                System.out.println("插入商品失败！");
-            }
-        } catch (SQLException e){
-            throw e;
+            count = preparedStatement.executeUpdate();
         }
+
+        return count > 0;
     }
 
     //根据传入商品ID更新数据库商品库存
-    void updateStock(long id, int stock) throws SQLException {
+    boolean updateStock(long id, int stock) throws SQLException {
         String sql = "update product set stock = ? where id = ?";
-        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ){
+        int count = 0;
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
             preparedStatement.setLong(2, id);
             preparedStatement.setInt(1, stock);
-            int num = preparedStatement.executeUpdate();
-            if(num > 0){
-                System.out.println("更新商品库存成功！");
-            }else {
-                System.out.println("更新商品库存失败！");
-            }
-        }catch (SQLException e){
-            throw e;
+            count = preparedStatement.executeUpdate();
         }
+
+        return count > 0;
+    }
+
+    //查询商品否存在
+    boolean existsByName(String name) throws SQLException {
+        String sql = "select count(*) from product where name = ?";
+        int count = 0;
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
+            preparedStatement.setString(1, name);
+            try(ResultSet rs = preparedStatement.executeQuery();)
+            {
+                if(rs.next()){
+                    count = rs.getInt(1);
+                }
+            }
+        }
+
+        return count > 0;
     }
 
     //根据传入商品ID删除数据库商品
-    void deleteById(long id) throws SQLException {
+    boolean deleteById(long id) throws SQLException {
         String sql = "delete from product where id = ?";
-        try (Connection connection = DriverManager.getConnection(url, mysqlName, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ){
+        int count = 0;
+        try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
             preparedStatement.setLong(1, id);
-            int num = preparedStatement.executeUpdate();
-            if(num > 0){
-                System.out.println("删除商品成功！");
-            }else {
-                System.out.println("删除商品失败！");
-            }
-        }catch (SQLException e){
-            throw e;
+            count = preparedStatement.executeUpdate();
         }
+
+        return count > 0;
     }
 
 }

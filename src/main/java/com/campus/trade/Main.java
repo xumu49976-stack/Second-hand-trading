@@ -31,12 +31,12 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        ProductDao productDao = new ProductDao();
+        ProductManager productManager = new ProductManager();
         List<Product> productList = new ArrayList<>();
 
         //查库展示
         try {
-            productList = productDao.findAll();
+            productList = productManager.findAll();
             System.out.println(productList);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,8 +44,8 @@ public class Main {
 
         //查询
         try {
-            Product product = productDao.findById(1);
-            System.out.println(product);
+            List<Product> products = productManager.searchByName("米雪");
+            System.out.println(products);
         }catch (SQLException e){
             e.printStackTrace();
         }
@@ -53,28 +53,40 @@ public class Main {
         //增加
         try {
             Product product = new Product("鸡腿", 5, 66);
-            productDao.insert(product);
+            if( productManager.addProduct(product) ){
+                System.out.println("商品增加成功！");
+            } else {
+                System.out.println("商品增加失败！！");
+            }
         }catch (SQLException e){
             e.printStackTrace();
         }
 
-        //修改
+        //修改库存
         try {
-            productDao.updateStock(4, 666);
+            if( productManager.updateStock(4, 666) ){
+                System.out.println("商品库存修改成功！");
+            } else {
+                System.out.println("商品库存修改失败！！");
+            }
         }catch (SQLException e){
             e.printStackTrace();
         }
 
         //删除
         try {
-            productDao.deleteById(4);
+            if( productManager.deleteById(4) ){
+                System.out.println("商品删除成功！");
+            } else {
+                System.out.println("商品删除失败！！");
+            }
         }catch (SQLException e){
             e.printStackTrace();
         }
 
         //查库展示
         try {
-            productList = productDao.findAll();
+            productList = productManager.findAll();
             System.out.println(productList);
         } catch (SQLException e) {
             e.printStackTrace();
