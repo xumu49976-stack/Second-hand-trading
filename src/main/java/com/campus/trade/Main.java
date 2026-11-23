@@ -52,10 +52,12 @@ public class Main {
         }
 
         //增加
+        long keyid = 0;
         try {
             Product product = new Product("鸡腿", new BigDecimal("5.00"), 66);
             if( productManager.addProduct(product) ){
                 System.out.println("商品增加成功！");
+                keyid = product.getId();
             } else {
                 System.out.println("商品增加失败！！");
             }
@@ -65,7 +67,7 @@ public class Main {
 
         //修改库存
         try {
-            if( productManager.updateStock(4, 666) ){
+            if( productManager.updateStock(keyid, 666) ){
                 System.out.println("商品库存修改成功！");
             } else {
                 System.out.println("商品库存修改失败！！");
@@ -76,7 +78,7 @@ public class Main {
 
         //删除
         try {
-            if( productManager.deleteById(4) ){
+            if( productManager.deleteById(keyid) ){
                 System.out.println("商品删除成功！");
             } else {
                 System.out.println("商品删除失败！！");

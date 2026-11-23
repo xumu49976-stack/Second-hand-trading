@@ -43,10 +43,11 @@ public class ProductDao {
         {
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 while (resultSet.next()){
+                    long id = resultSet.getLong("id");
                     String name = resultSet.getString("name");
                     BigDecimal price = resultSet.getBigDecimal("price");
                     int stock = resultSet.getInt("stock");
-                    Product product = new Product(name, price, stock);
+                    Product product = new Product(id, name, price, stock);
                     productList.add(product);
                 }
             }
@@ -56,19 +57,20 @@ public class ProductDao {
     }
 
     //根据id返回数据库里对应商品对象
-    Product findById(long id) throws SQLException {
+    Product findById(long productid) throws SQLException {
         String sql = "select * from product where id =?";
         try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);)
         {
-            preparedStatement.setLong(1, id);
+            preparedStatement.setLong(1, productid);
             try(ResultSet resultSet = preparedStatement.executeQuery();)
             {
                 if(resultSet.next()){
+                    long id = resultSet.getLong("id");
                     String name = resultSet.getString("name");
                     BigDecimal price = resultSet.getBigDecimal("price");
                     int stock = resultSet.getInt("stock");
-                    Product product = new Product(name, price, stock);
+                    Product product = new Product(id, name, price, stock);
                     return product;
                 }
             }
@@ -80,7 +82,7 @@ public class ProductDao {
     //根据商品名返回同名商品列表
     List<Product> findByName(String name) throws SQLException {
         List<Product> productList = new ArrayList<>();
-        String sql = "select name, price, stock from product where name = ?";
+        String sql = "select id, name, price, stock from product where name = ?";
         try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);)
         {
@@ -88,7 +90,7 @@ public class ProductDao {
             try(ResultSet resultSet = preparedStatement.executeQuery();)
             {
                 while (resultSet.next()){
-                    Product product = new Product(resultSet.getString("name"), resultSet.getBigDecimal("price"), resultSet.getInt("stock"));
+                    Product product = new Product(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getBigDecimal("price"), resultSet.getInt("stock"));
                     productList.add(product);
                 }
             }
@@ -105,12 +107,17 @@ public class ProductDao {
         int count = 0;
         String sql = "insert into product (name, price, stock) values (?, ?, ?)";
         try(Connection connection = DriverManager.getConnection(url, mysqlName, password);
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) )
         {
             preparedStatement.setString(1, productNamename);
             preparedStatement.setBigDecimal(2, productPrice);
             preparedStatement.setInt(3, productStock);
             count = preparedStatement.executeUpdate();
+            try (ResultSet keys = preparedStatement.getGeneratedKeys()) {   // ← 它也是 ResultSet，要关
+                if (keys.next()) {
+                    product.setId(keys.getLong(1));          // ← 回填到传入的对象上
+                }
+            }
         }
 
         return count > 0;

@@ -25,9 +25,17 @@ import java.util.Objects;
  * 先别急着敲。把你的想法告诉我，我只指出问题，不给答案。
  */
 public class Product {
+    private long id;
     private String name;
     private BigDecimal price;
     private int stock;
+
+    public long getId() {
+        return id;
+    }
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -72,13 +80,22 @@ public class Product {
         }
     }
 
-    //带参构造
-    public Product(String name, BigDecimal price, int stock) {
-        if(!this.setName(name)){
+    /** 仅供从数据库重建对象，业务代码请用 3 参构造 */
+    public Product(long id, String name, BigDecimal price, int stock) {
+        if(!this.setName(name)) {
             throw new IllegalArgumentException("商品名不能为空");
         }
         this.setPriceOrThrow(price);
-        this.setStock(stock);
+
+        // 库存判断，如果失败就抛异常
+        if(!this.setStock(stock)) {
+            throw new IllegalArgumentException("库存不能为负：" + stock);
+        }
+        this.setId(id);
+    }
+    //实例化构造
+    public Product(String name, BigDecimal price, int stock) {
+        this(0L, name, price, stock);   // 0 表示"还没入库"
     }
 
     public void showProduct(){
@@ -117,24 +134,25 @@ public class Product {
         if(this == o){ return true; }
         if(o == null || getClass() != o.getClass()){ return false; }
         Product p = (Product) o;
-        // 修改后 (推荐使用 compareTo)
-        return Objects.equals(p.getName(), name)
-                && p.getPrice() != null
-                && p.getPrice().compareTo(price) == 0
-                && p.getStock() == stock;
+
+        if (id != 0 && p.id != 0) {        // 都入库了 → 按主键
+            return id == p.id;
+        }
+        return false;                      // 有一个没入库 → 只有同一引用才相等
     }
 
     @Override
+    /** 约定**：对象入库后才可以当集合的 key（最省事，靠自律）*/
     public int hashCode() {
-        // 使用 Objects.hash 可以自动处理 null 值，非常方便
-        return Objects.hash(name, price, stock);
-
+        // 已入库按主键算，未入库按内存地址算
+        return id != 0 ? Long.hashCode(id) : System.identityHashCode(this);
     }
 
     @Override
     public String toString() {
         return "Product{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", price=" + price +
                 ", stock=" + stock +
                 '}';
