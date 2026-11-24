@@ -95,5 +95,26 @@ public class Main {
             e.printStackTrace();
         }
 
+        System.out.println("-----------------------------------------------------");
+
+        UserDao userDao = new UserDao();
+        try {
+            if(userDao.existsByUsername("王林")){
+                System.out.println("该用户存在！");
+            }else {
+                System.out.println("该用户不存在！");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        try {
+            User user = userDao.findByUsername("李慕婉");
+            System.out.println(user);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+
     }
 }

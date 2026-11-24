@@ -141,8 +141,8 @@ public class Product {
         return false;                      // 有一个没入库 → 只有同一引用才相等
     }
 
-    @Override
     /** 约定**：对象入库后才可以当集合的 key（最省事，靠自律）*/
+    @Override
     public int hashCode() {
         // 已入库按主键算，未入库按内存地址算
         return id != 0 ? Long.hashCode(id) : System.identityHashCode(this);
